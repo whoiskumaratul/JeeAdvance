@@ -42,20 +42,17 @@ const [filteredData, setFilteredData] = useState([]);
 //       //validationSchema: validate,
 //   });
 
-const formik = useFormik({
-    initialValues: {
-      gender: "",
-      seattype: "",
-      pwd: "",
-      jeerank: "" 
-      },
-      enableReinitialize: true,
-      validationSchema: validate,
-    });
+const validationSchema = Yup.object({
+    jeeRank: Yup.number().required('JEE Rank is required'),
+    gender: Yup.string().required('Gender is required'),
+    seatType: Yup.string().required('Seat Type is required'),
+    pwdStatus: Yup.string().required('PWD Status is required'),
+  });
+
     const   onSubmit = async (values) => {
         try {
           // Fetch data from FastAPI backend
-          const response = await axios.get('https://127.0.0.1:8000/apiUrl');
+          const response = await axios.get('https://127.0.0.1:8000/instituts');
           const jsonData = response.data;
     
           console.log('Fetched Data:', jsonData); // Log fetched data
@@ -85,6 +82,11 @@ const formik = useFormik({
 
     <div class="container">
         <h2 class="py-3 text-center">JEE Advance</h2>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={onSubmit}
+      >
         
         <div class="row py-3">
         <form  onSubmit={onSubmit}
@@ -99,24 +101,18 @@ const formik = useFormik({
                 <div class="form-group mb-3 ">
                     <label >Gender</label>
                     <select class="form-control" name="gender"
-                     onChange={formik.handleChange}
-                     value={formik.values.gender} 
-                     onBlur={formik.handleBlur}
+                     
                      > 
                         <option value="Select Gender" >Select Gender</option>
                         <option value="Male">MALE</option>
                         <option value="Female">Female</option>
                     </select>
-                    {formik.touched.gender && formik.errors.gender && (
-                  <p className="text-danger">{formik.errors.gender}</p>
-                )}
+                    <ErrorMessage name="gender" component="div" />
                 </div>
                 <div class="form-group mb-3">
                     <label>Seat Type</label>
                     <select class="form-control" 
-                    name="seattype" onChange={formik.handleChange}
-                    value={formik.values.seattype}
-                    onBlur={formik.handleBlur}
+                   name="seattype" 
                     > 
                         <option value="Select SeatType">Select Seat Type</option>
                         <option value="Open">Open</option>
@@ -124,40 +120,26 @@ const formik = useFormik({
                         <option value="ST">ST</option>
                         <option value="SC">SC</option>
                     </select>
-                    {
-                      formik.touched.seattype && formik.errors.seattype && (
-                        <>
-                          <p class="text-danger">{formik.errors.seattype}</p>
-                        </>
-                      )
-                    }
+                    <ErrorMessage name="seatType" component="div" />
+               
                 </div>
                 <div class="form-group mb-3">
                 <input type="checkbox" 
                 name="pwd" 
-                onChange={formik.handleChange} 
-                 onBlur={formik.handleBlur}
-
-                value={formik.values.pwd}
+                
                 class="form-check-input" id="pwdStatus"></input>
                    <label class="form-check-label" for="pwdStatus">Person with Disability (PWD)</label>
-                   {formik.touched.pwd && formik.errors.pwd && (
-                  <p className="text-danger">{formik.errors.pwd}</p>
-                )}
+                  <ErrorMessage name="pwd" component="div" />
                 </div>
 
                 <div class="form-group mb-3">
                 <label>JEE Rank</label>
                     <input type="number"
-                     onChange={formik.handleChange} 
-                     value={formik.values.jeerank}
-                 onBlur={formik.handleBlur}
+                     
 
                      name="jeerank" 
                      class="form-control"></input>
-                      {formik.touched.jeerank && formik.errors.jeerank && (
-                  <p className="text-danger">{formik.errors.jeerank}</p>
-                )}
+                    <ErrorMessage name="jeerank" component="div" />  
                 </div>
 
                 <button type='submit' class="btn btn-primary mt-3">Submit</button>
@@ -165,6 +147,7 @@ const formik = useFormik({
                 </div>
                 </form>
             </div>
+        </Formik>
             
             </div>
                  {/* Display the filtered results */}
